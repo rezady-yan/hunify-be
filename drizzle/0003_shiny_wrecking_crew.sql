@@ -1,0 +1,1 @@
+ALTER TABLE "properties" ADD COLUMN IF NOT EXISTS "typeProperties" varchar(50) NOT NULL DEFAULT 'indekos';

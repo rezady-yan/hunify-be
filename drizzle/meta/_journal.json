@@ -1,0 +1,76 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1770979753229,
+      "tag": "0000_icy_hawkeye",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1771208579878,
+      "tag": "0001_organic_charles_xavier",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1740148800000,
+      "tag": "0002_add_type_column",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1771656537619,
+      "tag": "0003_shiny_wrecking_crew",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1771730251976,
+      "tag": "0004_small_bloodaxe",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1771733672466,
+      "tag": "0005_oval_king_bedlam",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1771827355149,
+      "tag": "0006_dapper_doctor_faustus",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1771830725131,
+      "tag": "0007_heavy_bedlam",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1773477634493,
+      "tag": "0008_large_leper_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1773539707289,
+      "tag": "0009_massive_spot",
+      "breakpoints": true
+    }
+  ]
+}

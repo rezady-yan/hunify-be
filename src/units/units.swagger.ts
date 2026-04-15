@@ -1,5 +1,12 @@
 import { t } from "elysia";
 
+const unitStatusSchema = t.Union([
+  t.Literal("VACANT"),
+  t.Literal("OCCUPIED"),
+  t.Literal("MAINTENANCE"),
+  t.Literal("RESERVED"),
+]);
+
 export const unitsSwaggerSchemas = {
   createUnit: {
     detail: {
@@ -35,6 +42,9 @@ export const unitsSwaggerSchemas = {
           description: "Unit description",
           examples: ["Kamar ukuran 3x4 meter dengan AC"],
         }),
+      ),
+      status: t.Optional(
+        unitStatusSchema,
       ),
     }),
     response: {
@@ -200,6 +210,9 @@ export const unitsSwaggerSchemas = {
       price: t.Optional(t.String()),
       floor: t.Optional(t.String({ maxLength: 20 })),
       description: t.Optional(t.String({ maxLength: 1000 })),
+      status: t.Optional(
+        unitStatusSchema,
+      ),
     }),
     response: {
       200: t.Object({

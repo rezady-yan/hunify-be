@@ -316,19 +316,25 @@ export class TenantsService {
     tenantId: string,
     data: EditTenantRequest,
   ): Promise<Tenant> {
-    // Verifikasi tenant exists dan owner punya akses
-    const existingTenant = await db
-      .select({
-        tenant: tenants,
-        property: properties,
-      })
+    console.log("Edit tenant", { ownerId, tenantId, data });
+    // Verifikasi tenant exists
+    const tenant = await db
+      .select()
       .from(tenants)
-      .innerJoin(properties, eq(tenants.propertyId, properties.id))
-      .where(and(eq(tenants.id, tenantId), eq(properties.ownerId, ownerId)))
+      .where(eq(tenants.id, tenantId))
       .limit(1);
 
-    if (!existingTenant || existingTenant.length === 0) {
-      throw new Error("Tenant not found or access denied");
+    if (!tenant || tenant.length === 0) {
+      throw new Error("Tenant not found");
+    }
+
+    // Verifikasi owner punya property yang punya tenant ini
+    const property = await db.query(
+      `SELECT * FROM properties WHERE id = '${tenant[0].propertyId}' AND owner_id = '${ownerId}' LIMIT 1`
+    );
+
+    if (!property || property.length === 0) {
+      throw new Error("Access denied");
     }
 
     // Update tenant

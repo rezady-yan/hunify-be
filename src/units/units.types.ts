@@ -1,11 +1,19 @@
 export type UnitStatus = "VACANT" | "OCCUPIED" | "MAINTENANCE" | "RESERVED";
 
+export const unitStatusValues: UnitStatus[] = [
+  "VACANT",
+  "OCCUPIED",
+  "MAINTENANCE",
+  "RESERVED",
+];
+
 export interface CreateUnitRequest {
   propertyId: string;
   unitName: string;
   price: string;
   floor?: string;
   description?: string;
+  status?: UnitStatus;
 }
 
 export interface BulkCreateUnitRequest {
@@ -21,6 +29,7 @@ export interface EditUnitRequest {
   price?: string;
   floor?: string;
   description?: string;
+  status?: UnitStatus;
 }
 
 export interface AssignTenantRequest {

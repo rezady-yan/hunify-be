@@ -195,6 +195,7 @@ export function validateCreateTenancyInput(data: CreateTenancyRequest): void {
 export function validateEditTenantInput(data: EditTenantRequest): void {
   // Minimal satu field harus diisi
   if (
+    !data.fullName &&
     !data.phoneNumber &&
     !data.email &&
     !data.address &&
@@ -203,6 +204,16 @@ export function validateEditTenantInput(data: EditTenantRequest): void {
     !data.notes
   ) {
     throw new ValidationError("general", "Minimal satu field harus diisi");
+  }
+
+  // Full Name
+  if (data.fullName) {
+    if (data.fullName.trim() === "") {
+      throw new ValidationError("fullName", "Nama lengkap tidak boleh kosong");
+    }
+    if (data.fullName.length > 100) {
+      throw new ValidationError("fullName", "Nama lengkap maksimal 100 karakter");
+    }
   }
 
   // Phone Number

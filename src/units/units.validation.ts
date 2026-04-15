@@ -4,6 +4,7 @@ import {
   EditUnitRequest,
   AssignTenantRequest,
   UpdateStatusRequest,
+  unitStatusValues,
 } from "./units.types";
 
 export class ValidationError extends Error {
@@ -50,6 +51,13 @@ export function validateCreateUnitInput(data: CreateUnitRequest): void {
     throw new ValidationError(
       "description",
       "Deskripsi maksimal 1000 karakter",
+    );
+  }
+
+  if (data.status !== undefined && !unitStatusValues.includes(data.status)) {
+    throw new ValidationError(
+      "status",
+      `Status harus salah satu dari: ${unitStatusValues.join(", ")}`,
     );
   }
 }
@@ -129,6 +137,13 @@ export function validateEditUnitInput(data: EditUnitRequest): void {
     throw new ValidationError(
       "description",
       "Deskripsi maksimal 1000 karakter",
+    );
+  }
+
+  if (data.status !== undefined && !unitStatusValues.includes(data.status)) {
+    throw new ValidationError(
+      "status",
+      `Status harus salah satu dari: ${unitStatusValues.join(", ")}`,
     );
   }
 }

@@ -25,6 +25,7 @@ export interface CreateTenancyRequest {
 }
 
 export interface EditTenantRequest {
+  fullName?: string;
   phoneNumber?: string;
   email?: string;
   address?: string;

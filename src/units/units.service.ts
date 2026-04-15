@@ -58,7 +58,7 @@ export class UnitsService {
         price: data.price,
         floor: data.floor || null,
         description: data.description || null,
-        status: "VACANT",
+        status: data.status || "VACANT",
       })
       .returning();
 
@@ -282,6 +282,7 @@ export class UnitsService {
     if (data.floor !== undefined) updateData.floor = data.floor || null;
     if (data.description !== undefined)
       updateData.description = data.description || null;
+    if (data.status !== undefined) updateData.status = data.status;
 
     const result = await db
       .update(units)

@@ -44,6 +44,8 @@ export class PropertiesService {
 
     if (data.name !== undefined) updateData.name = data.name;
     if (data.address !== undefined) updateData.address = data.address;
+    if (data.typeProperties !== undefined)
+      updateData.typeProperties = data.typeProperties;
     if (data.city !== undefined) updateData.city = data.city;
     if (data.province !== undefined) updateData.province = data.province;
     if (data.postalCode !== undefined) updateData.postalCode = data.postalCode;

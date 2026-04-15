@@ -7,7 +7,8 @@ export default defineConfig({
   dbCredentials: {
     host: "localhost",
     port: 5432,
-    user: "rezady", // Current system user
-    database: "hunify_db",
+    user: "admin", // Current system user
+    database: "hunify",
+    password: "hunify"
   },
 });

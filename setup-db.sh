@@ -20,25 +20,25 @@ echo "📝 Current system user: $CURRENT_USER"
 echo ""
 
 # Try to create database
-echo "🔨 Creating database 'hunify_db'..."
+echo "🔨 Creating database 'hunify'..."
 
 # Try with current user first
-if psql -h localhost -U "$CURRENT_USER" -lqt | cut -d \| -f 1 | grep -qw hunify_db; then
-  echo "✅ Database 'hunify_db' already exists"
+if psql -h localhost -U "$CURRENT_USER" -lqt | cut -d \| -f 1 | grep -qw hunify; then
+  echo "✅ Database 'hunify' already exists"
 else
   # Try to create with current user
-  if createdb -h localhost -U "$CURRENT_USER" hunify_db 2>/dev/null; then
-    echo "✅ Database 'hunify_db' created with user: $CURRENT_USER"
+  if createdb -h localhost -U "$CURRENT_USER" hunify 2>/dev/null; then
+    echo "✅ Database 'hunify' created with user: $CURRENT_USER"
   else
     # Try with postgres user
     echo "⚠️  Failed with current user, trying with 'postgres' user..."
-    if createdb -h localhost -U postgres hunify_db 2>/dev/null; then
-      echo "✅ Database 'hunify_db' created with user: postgres"
+    if createdb -h localhost -U postgres hunify 2>/dev/null; then
+      echo "✅ Database 'hunify' created with user: postgres"
     else
       echo "❌ Failed to create database"
       echo ""
       echo "Please create the database manually:"
-      echo "  psql -h localhost -U $CURRENT_USER -c 'CREATE DATABASE hunify_db;'"
+      echo "  psql -h localhost -U $CURRENT_USER -c 'CREATE DATABASE hunify;'"
       echo ""
       echo "Or specify correct username in drizzle.config.ts"
       exit 1

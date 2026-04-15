@@ -61,12 +61,12 @@ drizzle.config.ts     # Drizzle Kit configuration
 
 **Connection String:**
 ```
-postgres://rezady@localhost:5432/hunify_db
+postgres://adminy@localhost:5432/hunify
 ```
 
 **Environment Variable:**
 ```bash
-DATABASE_URL=postgres://rezady@localhost:5432/hunify_db
+DATABASE_URL=postgres://admin@localhost:5432/hunify
 ```
 
 ### 🛠️ Available Commands

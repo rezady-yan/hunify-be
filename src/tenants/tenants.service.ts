@@ -341,8 +341,10 @@ export class TenantsService {
     const result = await db
       .update(tenants)
       .set({
+        fullName: data.fullName,
         phoneNumber: data.phoneNumber,
         email: data.email,
+        identityNumber: data.identityNumber,
         address: data.address,
         emergencyContactName: data.emergencyContactName,
         emergencyContactPhone: data.emergencyContactPhone,

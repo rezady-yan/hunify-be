@@ -18,10 +18,6 @@ export const tenantsSwaggerSchemas = {
         description: "Phone number",
         examples: ["08123456789"],
       }),
-      propertyId: t.String({
-        description: "Property ID",
-        examples: ["dd846803-27b0-4c76-b2d9-60c64424d66d"],
-      }),
       email: t.Optional(
         t.String({
           format: "email",
@@ -67,7 +63,6 @@ export const tenantsSwaggerSchemas = {
         data: t.Object({
           tenant: t.Object({
             id: t.String(),
-            propertyId: t.String(),
             fullName: t.String(),
             phoneNumber: t.String(),
             email: t.Nullable(t.String()),
@@ -297,7 +292,7 @@ export const tenantsSwaggerSchemas = {
     detail: {
       tags: ["Tenants"],
       summary: "Edit tenancy information",
-      description: "Update billing cycle, rent price, or end date (Owner only)",
+      description: "Update billing cycle, rent price, or end date. Can also move tenant to different unit (Owner only)",
       security: [{ bearerAuth: [] }],
     },
     params: t.Object({
@@ -321,6 +316,16 @@ export const tenantsSwaggerSchemas = {
           description: "Update end date (YYYY-MM-DD)",
         }),
       ),
+      unitId: t.Optional(
+        t.String({
+          description: "Change to different unit (pindah unit)",
+        }),
+      ),
+      startDate: t.Optional(
+        t.String({
+          description: "Change start date when moving to different unit (YYYY-MM-DD)",
+        }),
+      ),
     }),
     response: {
       200: t.Object({
@@ -329,6 +334,8 @@ export const tenantsSwaggerSchemas = {
         data: t.Object({
           tenancy: t.Object({
             id: t.String(),
+            unitId: t.String(),
+            startDate: t.Nullable(t.String()),
             billingCycle: t.String(),
             billingAnchorDay: t.Nullable(t.Number()),
             rentPrice: t.String(),

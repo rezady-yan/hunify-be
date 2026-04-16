@@ -37,7 +37,7 @@ export class TenantsController {
    */
   async createTenant(context: AuthContext): Promise<ApiResponse> {
     try {
-      const body = context.body as CreateTenantRequest & { propertyId: string };
+      const body = context.body as CreateTenantRequest;
       const userId = context.user?.userId;
 
       if (!userId) {
@@ -59,22 +59,9 @@ export class TenantsController {
         };
       }
 
-      if (!body.propertyId) {
-        context.set.status = 400;
-        return {
-          success: false,
-          message: "Validation failed",
-          errors: { propertyId: "Property ID is required" },
-        };
-      }
-
       validateCreateTenantInput(body);
 
-      const tenant = await tenantsService.createTenant(
-        userId,
-        body.propertyId,
-        body,
-      );
+      const tenant = await tenantsService.createTenant(userId, body);
 
       context.set.status = 201;
       return {
@@ -83,7 +70,6 @@ export class TenantsController {
         data: {
           tenant: {
             id: tenant.id,
-            propertyId: tenant.propertyId,
             fullName: tenant.fullName,
             phoneNumber: tenant.phoneNumber,
             email: tenant.email,
@@ -300,6 +286,7 @@ export class TenantsController {
       const body = context.body as EditTenantRequest;
       const userId = context.user?.userId;
       const { id } = context.params as { id: string };
+      console.log("id", id);
 
       if (!userId) {
         context.set.status = 401;
@@ -402,6 +389,8 @@ export class TenantsController {
         data: {
           tenancy: {
             id: tenancy.id,
+            unitId: tenancy.unitId,
+            startDate: tenancy.startDate?.toString() || null,
             billingCycle: tenancy.billingCycle,
             billingAnchorDay: tenancy.billingAnchorDay,
             rentPrice: tenancy.rentPrice,

@@ -272,7 +272,9 @@ export function validateEditTenancyInput(data: EditTenancyRequest): void {
     !data.billingCycle &&
     data.billingAnchorDay === undefined &&
     !data.rentPrice &&
-    !data.endDate
+    !data.endDate &&
+    !data.unitId &&
+    !data.startDate
   ) {
     throw new ValidationError("general", "Minimal satu field harus diisi");
   }
@@ -327,6 +329,38 @@ export function validateEditTenancyInput(data: EditTenancyRequest): void {
     const endDate = new Date(data.endDate);
     if (isNaN(endDate.getTime())) {
       throw new ValidationError("endDate", "Tanggal selesai tidak valid");
+    }
+  }
+
+  // Unit ID (optional - untuk pindah unit)
+  if (data.unitId && data.unitId.trim() === "") {
+    throw new ValidationError("unitId", "Unit ID tidak boleh kosong");
+  }
+
+  // Start Date (optional - untuk ubah tanggal mulai saat pindah unit)
+  if (data.startDate) {
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(data.startDate)) {
+      throw new ValidationError(
+        "startDate",
+        "Format tanggal mulai harus YYYY-MM-DD",
+      );
+    }
+
+    const startDate = new Date(data.startDate);
+    if (isNaN(startDate.getTime())) {
+      throw new ValidationError("startDate", "Tanggal mulai tidak valid");
+    }
+
+    // Jika ada endDate, startDate harus sebelum endDate
+    if (data.endDate) {
+      const endDate = new Date(data.endDate);
+      if (startDate >= endDate) {
+        throw new ValidationError(
+          "startDate",
+          "Tanggal mulai harus sebelum tanggal selesai",
+        );
+      }
     }
   }
 }

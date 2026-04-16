@@ -39,6 +39,8 @@ export interface EditTenancyRequest {
   billingAnchorDay?: number;
   rentPrice?: string;
   endDate?: string;
+  unitId?: string;
+  startDate?: string;
 }
 
 export interface EndTenancyRequest {
@@ -66,7 +68,6 @@ export interface ApiResponse<T = any> {
 
 export interface Tenant {
   id: string;
-  propertyId: string;
   fullName: string;
   phoneNumber: string;
   email?: string | null;

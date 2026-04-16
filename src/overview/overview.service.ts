@@ -166,20 +166,6 @@ export class OverviewService {
       SELECT 
         '1' as sort_order,
         id,
-        full_name as title,
-        'TENANT_CREATED' as type,
-        'Tenant Baru Masuk' as description,
-        '👤' as icon,
-        'blue' as color,
-        created_at as timestamp
-      FROM tenants
-      WHERE property_id IN (SELECT id FROM properties WHERE owner_id = ${ownerId})
-      
-      UNION ALL
-      
-      SELECT 
-        '2' as sort_order,
-        id,
         amount::text as title,
         'PAYMENT_RECORDED' as type,
         'Pembayaran Diterima' as description,
@@ -194,7 +180,7 @@ export class OverviewService {
       UNION ALL
       
       SELECT 
-        '3' as sort_order,
+        '2' as sort_order,
         id,
         invoice_number as title,
         'INVOICE_CREATED' as type,

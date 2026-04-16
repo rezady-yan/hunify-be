@@ -29,45 +29,12 @@ export class TenantsService {
    */
   async createTenant(
     ownerId: string,
-    propertyId: string,
     data: CreateTenantRequest,
   ): Promise<Tenant> {
-    // Verifikasi bahwa property milik owner
-    const property = await db
-      .select()
-      .from(properties)
-      .where(
-        and(eq(properties.id, propertyId), eq(properties.ownerId, ownerId)),
-      )
-      .limit(1);
-
-    if (!property || property.length === 0) {
-      throw new Error("Property not found or access denied");
-    }
-
-    // Cek duplikasi phone number dalam property
-    const existingTenant = await db
-      .select()
-      .from(tenants)
-      .where(
-        and(
-          eq(tenants.propertyId, propertyId),
-          eq(tenants.phoneNumber, data.phoneNumber),
-        ),
-      )
-      .limit(1);
-
-    if (existingTenant && existingTenant.length > 0) {
-      throw new Error(
-        "Tenant with this phone number already exists in this property",
-      );
-    }
-
     // Insert tenant
     const result = await db
       .insert(tenants)
       .values({
-        propertyId,
         fullName: data.fullName,
         phoneNumber: data.phoneNumber,
         email: data.email || null,
@@ -106,20 +73,32 @@ export class TenantsService {
       throw new Error("Property not found or access denied");
     }
 
-    // Verifikasi tenant exists dan milik property yang sama
+    // Verifikasi tenant exists
     const tenant = await db
       .select()
       .from(tenants)
+      .where(eq(tenants.id, data.tenantId))
+      .limit(1);
+
+    if (!tenant || tenant.length === 0) {
+      throw new Error("Tenant not found");
+    }
+
+    // Verifikasi tenant hanya bisa di 1 property - cek apakah tenant sudah punya active tenancy di property lain
+    const existingTenancy = await db
+      .select()
+      .from(tenancies)
       .where(
         and(
-          eq(tenants.id, data.tenantId),
-          eq(tenants.propertyId, data.propertyId),
+          eq(tenancies.tenantId, data.tenantId),
+          eq(tenancies.status, "ACTIVE"),
+          // Exclude current property if updating
         ),
       )
       .limit(1);
 
-    if (!tenant || tenant.length === 0) {
-      throw new Error("Tenant not found in this property");
+    if (existingTenancy && existingTenancy.length > 0) {
+      throw new Error("Tenant already has an active tenancy in another property");
     }
 
     // Verifikasi unit exists dan milik property yang sama
@@ -316,8 +295,7 @@ export class TenantsService {
     tenantId: string,
     data: EditTenantRequest,
   ): Promise<Tenant> {
-    console.log("Edit tenant", { ownerId, tenantId, data });
-    // Verifikasi tenant exists
+    // Verifikasi tenant exists dan owner adalah yang create tenant
     const tenant = await db
       .select()
       .from(tenants)
@@ -328,12 +306,7 @@ export class TenantsService {
       throw new Error("Tenant not found");
     }
 
-    // Verifikasi owner punya property yang punya tenant ini
-    const property = await db.query(
-      `SELECT * FROM properties WHERE id = '${tenant[0].propertyId}' AND owner_id = '${ownerId}' LIMIT 1`
-    );
-
-    if (!property || property.length === 0) {
+    if (tenant[0].createdBy !== ownerId) {
       throw new Error("Access denied");
     }
 
@@ -380,16 +353,82 @@ export class TenantsService {
       throw new Error("Tenancy not found or access denied");
     }
 
+    const currentTenancy = existingTenancy[0].tenancy;
+    const updateData: any = {
+      billingCycle: data.billingCycle || currentTenancy.billingCycle,
+      billingAnchorDay: data.billingAnchorDay !== undefined ? data.billingAnchorDay : currentTenancy.billingAnchorDay,
+      rentPrice: data.rentPrice || currentTenancy.rentPrice,
+      endDate: data.endDate !== undefined ? data.endDate : currentTenancy.endDate,
+      updatedAt: new Date(),
+    };
+
+    // Jika ada perubahan unit (pindah unit)
+    if (data.unitId && data.unitId !== currentTenancy.unitId) {
+      // Verify unit baru exists dan milik property yang sama
+      const newUnit = await db
+        .select()
+        .from(units)
+        .where(
+          and(
+            eq(units.id, data.unitId),
+            eq(units.propertyId, currentTenancy.propertyId),
+          ),
+        )
+        .limit(1);
+
+      if (!newUnit || newUnit.length === 0) {
+        throw new Error("Unit not found in this property");
+      }
+
+      // Verify unit baru tidak occupied
+      if (newUnit[0].status === "OCCUPIED") {
+        throw new Error("New unit is already occupied");
+      }
+
+      // Verify unit baru tidak punya active tenancy
+      const newUnitActiveTenancy = await db
+        .select()
+        .from(tenancies)
+        .where(
+          and(eq(tenancies.unitId, data.unitId), eq(tenancies.status, "ACTIVE")),
+        )
+        .limit(1);
+
+      if (newUnitActiveTenancy && newUnitActiveTenancy.length > 0) {
+        throw new Error("New unit already has an active tenancy");
+      }
+
+      // Update unit lama status ke VACANT
+      await db
+        .update(units)
+        .set({
+          status: "VACANT",
+          updatedAt: new Date(),
+        })
+        .where(eq(units.id, currentTenancy.unitId));
+
+      // Update unit baru status ke OCCUPIED
+      await db
+        .update(units)
+        .set({
+          status: "OCCUPIED",
+          updatedAt: new Date(),
+        })
+        .where(eq(units.id, data.unitId));
+
+      // Add unitId ke update data
+      updateData.unitId = data.unitId;
+
+      // Jika ada startDate baru, update juga
+      if (data.startDate) {
+        updateData.startDate = data.startDate;
+      }
+    }
+
     // Update tenancy
     const result = await db
       .update(tenancies)
-      .set({
-        billingCycle: data.billingCycle,
-        billingAnchorDay: data.billingAnchorDay,
-        rentPrice: data.rentPrice,
-        endDate: data.endDate,
-        updatedAt: new Date(),
-      })
+      .set(updateData)
       .where(eq(tenancies.id, tenancyId))
       .returning();
 

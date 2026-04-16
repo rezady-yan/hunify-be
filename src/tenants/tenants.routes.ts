@@ -5,6 +5,16 @@ import { tenantsSwaggerSchemas } from "./tenants.swagger";
 const tenantsController = new TenantsController();
 
 export const tenantsRoutes = new Elysia()
+  .get(
+    "/view-all",
+    (context: any) => tenantsController.getViewAll(context),
+    tenantsSwaggerSchemas.getViewAll,
+  )
+  .get(
+    "/view-all/:id",
+    (context: any) => tenantsController.getViewAllTenant(context),
+    tenantsSwaggerSchemas.getViewAllTenant,
+  )
   .post(
     "/",
     (context: any) => tenantsController.createTenant(context),
@@ -30,8 +40,8 @@ export const tenantsRoutes = new Elysia()
     (context: any) => tenantsController.editTenant(context),
     tenantsSwaggerSchemas.editTenant,
   )
-  .put(
-    "/:id",
+  .patch(
+    "/tenancy/:id",
     (context: any) => tenantsController.editTenancy(context),
     tenantsSwaggerSchemas.editTenancy,
   )

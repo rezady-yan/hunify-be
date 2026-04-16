@@ -561,4 +561,237 @@ export class TenantsService {
     // Delete document
     await db.delete(tenantDocuments).where(eq(tenantDocuments.id, documentId));
   }
+
+  /**
+   * Get all tenants with their tenancies and documents (raw SQL)
+   */
+  async getViewAll(ownerId: string): Promise<any[]> {
+    const result = await db.execute(sql`
+      SELECT 
+        t.id,
+        t.full_name,
+        t.phone_number,
+        t.email,
+        t.identity_number,
+        t.address,
+        t.emergency_contact_name,
+        t.emergency_contact_phone,
+        t.notes,
+        t.created_by,
+        t.created_at as tenant_created_at,
+        t.updated_at as tenant_updated_at,
+        
+        ten.id as tenancy_id,
+        ten.tenant_id,
+        ten.property_id,
+        p.name as property_name,
+        ten.unit_id,
+        u.unit_name,
+        ten.start_date,
+        ten.end_date,
+        ten.billing_cycle,
+        ten.billing_anchor_day,
+        ten.rent_price,
+        ten.status as tenancy_status,
+        ten.created_at as tenancy_created_at,
+        ten.updated_at as tenancy_updated_at,
+        
+        td.id as document_id,
+        td.type as document_type,
+        td.url as document_url,
+        td.uploaded_by,
+        td.uploaded_at
+      FROM tenants t
+      LEFT JOIN tenancies ten ON t.id = ten.tenant_id
+      LEFT JOIN properties p ON ten.property_id = p.id
+      LEFT JOIN units u ON ten.unit_id = u.id
+      LEFT JOIN tenant_documents td ON ten.id = td.tenancy_id
+      WHERE t.created_by = ${ownerId}
+      ORDER BY t.created_at DESC, ten.start_date DESC
+    `);
+
+    // Group results by tenant and tenancy
+    const tenantMap = new Map();
+    const tenancyMap = new Map();
+
+    for (const row of result) {
+      const tenantId = row.id as string;
+      
+      if (!tenantMap.has(tenantId)) {
+        tenantMap.set(tenantId, {
+          id: row.id,
+          fullName: row.full_name,
+          phoneNumber: row.phone_number,
+          email: row.email,
+          identityNumber: row.identity_number,
+          address: row.address,
+          emergencyContactName: row.emergency_contact_name,
+          emergencyContactPhone: row.emergency_contact_phone,
+          notes: row.notes,
+          createdBy: row.created_by,
+          createdAt: row.tenant_created_at,
+          updatedAt: row.tenant_updated_at,
+        });
+        tenancyMap.set(tenantId, new Map());
+      }
+
+      // Add tenancy if exists
+      if (row.tenancy_id) {
+        const tenancyMap_ = tenancyMap.get(tenantId);
+        if (!tenancyMap_.has(row.tenancy_id)) {
+          tenancyMap_.set(row.tenancy_id, {
+            id: row.tenancy_id,
+            tenantId: row.tenant_id,
+            propertyId: row.property_id,
+            unitId: row.unit_id,
+            startDate: row.start_date,
+            endDate: row.end_date,
+            billingCycle: row.billing_cycle,
+            billingAnchorDay: row.billing_anchor_day,
+            rentPrice: row.rent_price,
+            status: row.tenancy_status,
+            createdAt: row.tenancy_created_at,
+            updatedAt: row.tenancy_updated_at,
+            propertyName: row.property_name,
+            unitName: row.unit_name,
+          });
+        }
+      }
+    }
+
+    // Build final response
+    const viewAllTenants = Array.from(tenantMap.entries()).map(([tenantId, tenant]) => {
+      const tenancies = Array.from(tenancyMap.get(tenantId)!.values());
+      const documents = result
+        .filter(row => row.tenant_id === tenantId && row.document_id)
+        .map(row => ({
+          id: row.document_id,
+          tenancyId: row.tenancy_id,
+          type: row.document_type,
+          url: row.document_url,
+          uploadedBy: row.uploaded_by,
+          uploadedAt: row.uploaded_at,
+        }))
+        .filter((doc, index, arr) => arr.findIndex(d => d.id === doc.id) === index); // Remove duplicates
+
+      return {
+        tenant,
+        tenancies,
+        documents,
+      };
+    });
+
+    return viewAllTenants;
+  }
+
+  /**
+   * Get single tenant with their tenancies and documents (raw SQL)
+   */
+  async getViewAllTenant(ownerId: string, tenantId: string): Promise<any> {
+    const result = await db.execute(sql`
+      SELECT 
+        t.id as tenant_id,
+        t.full_name,
+        t.phone_number,
+        t.email,
+        t.identity_number,
+        t.address,
+        t.emergency_contact_name,
+        t.emergency_contact_phone,
+        t.notes,
+        t.created_by,
+        t.created_at as tenant_created_at,
+        t.updated_at as tenant_updated_at,
+        
+        ten.id as tenancy_id,
+        ten.tenant_id,
+        ten.property_id,
+        p.name as property_name,
+        ten.unit_id,
+        u.unit_name,
+        ten.start_date,
+        ten.end_date,
+        ten.billing_cycle,
+        ten.billing_anchor_day,
+        ten.rent_price,
+        ten.status as tenancy_status,
+        ten.created_at as tenancy_created_at,
+        ten.updated_at as tenancy_updated_at,
+        
+        td.id as document_id,
+        td.type as document_type,
+        td.url as document_url,
+        td.uploaded_by,
+        td.uploaded_at
+      FROM tenants t
+      LEFT JOIN tenancies ten ON t.id = ten.tenant_id
+      LEFT JOIN properties p ON ten.property_id = p.id
+      LEFT JOIN units u ON ten.unit_id = u.id
+      LEFT JOIN tenant_documents td ON ten.id = td.tenancy_id
+      WHERE t.id = ${tenantId} AND t.created_by = ${ownerId}
+      ORDER BY ten.start_date DESC
+    `);
+
+    if (!result || result.length === 0) {
+      throw new Error('Tenant not found');
+    }
+
+    const firstRow = result[0];
+    const tenant = {
+      id: firstRow.tenant_id,
+      fullName: firstRow.full_name,
+      phoneNumber: firstRow.phone_number,
+      email: firstRow.email,
+      identityNumber: firstRow.identity_number,
+      address: firstRow.address,
+      emergencyContactName: firstRow.emergency_contact_name,
+      emergencyContactPhone: firstRow.emergency_contact_phone,
+      notes: firstRow.notes,
+      createdBy: firstRow.created_by,
+      createdAt: firstRow.tenant_created_at,
+      updatedAt: firstRow.tenant_updated_at,
+    };
+
+    // Group tenancies and documents
+    const tenancyMap = new Map();
+    for (const row of result) {
+      if (row.tenancy_id && !tenancyMap.has(row.tenancy_id)) {
+        tenancyMap.set(row.tenancy_id, {
+          id: row.tenancy_id,
+          tenantId: row.tenant_id,
+          propertyId: row.property_id,
+          unitId: row.unit_id,
+          startDate: row.start_date,
+          endDate: row.end_date,
+          billingCycle: row.billing_cycle,
+          billingAnchorDay: row.billing_anchor_day,
+          rentPrice: row.rent_price,
+          status: row.tenancy_status,
+          createdAt: row.tenancy_created_at,
+          updatedAt: row.tenancy_updated_at,
+          propertyName: row.property_name,
+          unitName: row.unit_name,
+        });
+      }
+    }
+
+    const tenancies = Array.from(tenancyMap.values());
+    const documents = result
+      .filter(row => row.document_id)
+      .map(row => ({
+        id: row.document_id,
+        tenancyId: row.tenancy_id,
+        type: row.document_type,
+        url: row.document_url,
+        uploadedBy: row.uploaded_by,
+        uploadedAt: row.uploaded_at,
+      }))
+      .filter((doc, index, arr) => arr.findIndex(d => d.id === doc.id) === index); // Remove duplicates
+
+    return {
+      tenant,
+      tenancies,
+      documents,
+    };
+  }
 }

@@ -269,6 +269,7 @@ export const tenantsSwaggerSchemas = {
       emergencyContactName: t.Optional(t.String({ maxLength: 100 })),
       emergencyContactPhone: t.Optional(t.String()),
       notes: t.Optional(t.String({ maxLength: 1000 })),
+      fullName: t.Optional(t.String({ maxLength: 50 })),
     }),
     response: {
       200: t.Object({
@@ -434,6 +435,133 @@ export const tenantsSwaggerSchemas = {
       200: t.Object({
         success: t.Boolean(),
         message: t.String(),
+      }),
+    },
+  },
+  getViewAll: {
+    detail: {
+      tags: ["Tenants"],
+      summary: "Get all tenants with tenancies and documents",
+      description: "Retrieve all tenants with their tenancies and documents",
+      security: [{ bearerAuth: [] }],
+    },
+    response: {
+      200: t.Object({
+        success: t.Boolean(),
+        message: t.String(),
+        data: t.Optional(
+          t.Object({
+            tenants: t.Array(
+              t.Object({
+                tenant: t.Object({
+                  id: t.String(),
+                  fullName: t.String(),
+                  phoneNumber: t.String(),
+                  email: t.Optional(t.String()),
+                  identityNumber: t.Optional(t.String()),
+                  address: t.Optional(t.String()),
+                  emergencyContactName: t.Optional(t.String()),
+                  emergencyContactPhone: t.Optional(t.String()),
+                  notes: t.Nullable(t.String()),
+                  createdBy: t.String(),
+                  createdAt: t.String(),
+                  updatedAt: t.String(),
+                }),
+                tenancies: t.Array(
+                  t.Object({
+                    id: t.String(),
+                    tenantId: t.String(),
+                    propertyId: t.String(),
+                    unitId: t.String(),
+                    startDate: t.String(),
+                    endDate: t.Optional(t.String()),
+                    billingCycle: t.String(),
+                    billingAnchorDay: t.Optional(t.Number()),
+                    rentPrice: t.String(),
+                    status: t.String(),
+                    createdAt: t.String(),
+                    updatedAt: t.String(),
+                    propertyName: t.String(),
+                    unitName: t.String(),
+                  }),
+                ),
+                documents: t.Array(
+                  t.Object({
+                    id: t.String(),
+                    tenancyId: t.String(),
+                    type: t.String(),
+                    url: t.String(),
+                    uploadedBy: t.String(),
+                    uploadedAt: t.String(),
+                  }),
+                ),
+              }),
+            ),
+          }),
+        ),
+      }),
+    },
+  },
+  getViewAllTenant: {
+    detail: {
+      tags: ["Tenants"],
+      summary: "Get single tenant with tenancies and documents",
+      description: "Retrieve a single tenant with their tenancies and documents",
+      security: [{ bearerAuth: [] }],
+    },
+    params: t.Object({
+      id: t.String({ description: "Tenant ID" }),
+    }),
+    response: {
+      200: t.Object({
+        success: t.Boolean(),
+        message: t.String(),
+        data: t.Optional(
+          t.Object({
+            tenant: t.Object({
+              id: t.String(),
+              fullName: t.String(),
+              phoneNumber: t.String(),
+              email: t.Optional(t.String()),
+              identityNumber: t.Optional(t.String()),
+              address: t.Optional(t.String()),
+              emergencyContactName: t.Optional(t.String()),
+              emergencyContactPhone: t.Optional(t.String()),
+              notes: t.Nullable(t.String()),
+              createdBy: t.String(),
+              createdAt: t.String(),
+              updatedAt: t.String(),
+            }),
+            tenancies: t.Array(
+              t.Object({
+                id: t.String(),
+                tenantId: t.String(),
+                propertyId: t.String(),
+                unitId: t.String(),
+                startDate: t.String(),
+                endDate: t.Optional(t.String()),
+                billingCycle: t.String(),
+                billingAnchorDay: t.Optional(t.Number()),
+                rentPrice: t.String(),
+                status: t.String(),
+                createdAt: t.String(),
+                updatedAt: t.String(),
+                propertyName: t.String(),
+                unitName: t.String(),
+              }),
+            ),
+            documents: t.Array(
+              t.Object({
+                id: t.String(),
+                tenancyId: t.String(),
+                type: t.String(),
+                url: t.String(),
+                uploadedBy: t.String(),
+                uploadedAt: t.String(),
+              }),
+            ),
+          }),
+        ),
       }),
     },
   },

@@ -605,4 +605,77 @@ export class TenantsController {
       };
     }
   }
+
+  /**
+   * Get all tenants with tenancies and documents (view-all)
+   */
+  async getViewAll(context: AuthContext): Promise<ApiResponse> {
+    try {
+      const userId = context.user?.userId;
+
+      if (!userId) {
+        context.set.status = 401;
+        return {
+          success: false,
+          message: "Unauthorized",
+          errors: { auth: "User not authenticated" },
+        };
+      }
+
+      const viewAllData = await tenantsService.getViewAll(userId);
+
+      context.set.status = 200;
+      return {
+        success: true,
+        message: "View all tenants retrieved successfully",
+        data: {
+          tenants: viewAllData,
+        },
+      };
+    } catch (error) {
+      console.error("Get view all error:", error);
+      context.set.status = 500;
+      return {
+        success: false,
+        message: (error as Error).message || "Internal server error",
+        errors: { server: "Something went wrong" },
+      };
+    }
+  }
+
+  /**
+   * Get single tenant with tenancies and documents (view-all/{id})
+   */
+  async getViewAllTenant(context: AuthContext): Promise<ApiResponse> {
+    try {
+      const userId = context.user?.userId;
+      const { id } = context.params as { id: string };
+
+      if (!userId) {
+        context.set.status = 401;
+        return {
+          success: false,
+          message: "Unauthorized",
+          errors: { auth: "User not authenticated" },
+        };
+      }
+
+      const viewAllTenant = await tenantsService.getViewAllTenant(userId, id);
+
+      context.set.status = 200;
+      return {
+        success: true,
+        message: "Tenant view retrieved successfully",
+        data: viewAllTenant,
+      };
+    } catch (error) {
+      console.error("Get view all tenant error:", error);
+      context.set.status = 500;
+      return {
+        success: false,
+        message: (error as Error).message || "Internal server error",
+        errors: { server: "Something went wrong" },
+      };
+    }
+  }
 }

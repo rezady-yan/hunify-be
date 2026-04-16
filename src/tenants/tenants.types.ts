@@ -127,3 +127,21 @@ export interface TenantDetail {
   };
   documents: TenantDocument[];
 }
+
+// View All: Tenancy with property & unit names
+export interface TenancyWithNames extends Tenancy {
+  propertyName: string;
+  unitName: string;
+}
+
+// View All: Tenant with all related data
+export interface ViewAllTenant {
+  tenant: Tenant;
+  tenancies: TenancyWithNames[];
+  documents: TenantDocument[];
+}
+
+// View All Response: Multiple tenants
+export interface ViewAllResponse {
+  tenants: ViewAllTenant[];
+}

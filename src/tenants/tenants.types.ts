@@ -32,6 +32,7 @@ export interface EditTenantRequest {
   emergencyContactName?: string;
   emergencyContactPhone?: string;
   notes?: string;
+  identityNumber?: string;
 }
 
 export interface EditTenancyRequest {

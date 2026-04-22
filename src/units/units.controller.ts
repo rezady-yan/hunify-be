@@ -1,5 +1,5 @@
-import { Context } from "elysia";
 import { UnitsService } from "./units.service";
+import { AuthContext } from "../types/context";
 import {
   validateCreateUnitInput,
   validateBulkCreateUnitInput,
@@ -24,7 +24,7 @@ export class UnitsController {
   /**
    * Create unit
    */
-  async createUnit(context: Context): Promise<ApiResponse> {
+  async createUnit(context: AuthContext): Promise<ApiResponse> {
     try {
       const body = context.body as CreateUnitRequest;
       const userId = context.user?.userId;
@@ -92,7 +92,7 @@ export class UnitsController {
   /**
    * Bulk create units
    */
-  async bulkCreateUnits(context: Context): Promise<ApiResponse> {
+  async bulkCreateUnits(context: AuthContext): Promise<ApiResponse> {
     try {
       const body = context.body as BulkCreateUnitRequest;
       const userId = context.user?.userId;
@@ -149,7 +149,7 @@ export class UnitsController {
   /**
    * Get list units
    */
-  async getUnits(context: Context): Promise<ApiResponse> {
+  async getUnits(context: AuthContext): Promise<ApiResponse> {
     try {
       const userId = context.user?.userId;
 
@@ -214,7 +214,7 @@ export class UnitsController {
   /**
    * Get unit detail
    */
-  async getUnit(context: Context): Promise<ApiResponse> {
+  async getUnit(context: AuthContext): Promise<ApiResponse> {
     try {
       const userId = context.user?.userId;
       const unitId = context.params.id;
@@ -274,7 +274,7 @@ export class UnitsController {
   /**
    * Edit unit
    */
-  async editUnit(context: Context): Promise<ApiResponse> {
+  async editUnit(context: AuthContext): Promise<ApiResponse> {
     try {
       const body = context.body as EditUnitRequest;
       const userId = context.user?.userId;
@@ -352,7 +352,7 @@ export class UnitsController {
   /**
    * Delete unit
    */
-  async deleteUnit(context: Context): Promise<ApiResponse> {
+  async deleteUnit(context: AuthContext): Promise<ApiResponse> {
     try {
       const userId = context.user?.userId;
       const unitId = context.params.id;
@@ -406,7 +406,7 @@ export class UnitsController {
   /**
    * Assign tenant to unit
    */
-  async assignTenant(context: Context): Promise<ApiResponse> {
+  async assignTenant(context: AuthContext): Promise<ApiResponse> {
     try {
       const body = context.body as AssignTenantRequest;
       const userId = context.user?.userId;
@@ -479,7 +479,7 @@ export class UnitsController {
   /**
    * Unassign tenant from unit
    */
-  async unassignTenant(context: Context): Promise<ApiResponse> {
+  async unassignTenant(context: AuthContext): Promise<ApiResponse> {
     try {
       const userId = context.user?.userId;
       const unitId = context.params.id;
@@ -540,7 +540,7 @@ export class UnitsController {
   /**
    * Update unit status
    */
-  async updateStatus(context: Context): Promise<ApiResponse> {
+  async updateStatus(context: AuthContext): Promise<ApiResponse> {
     try {
       const body = context.body as UpdateStatusRequest;
       const userId = context.user?.userId;

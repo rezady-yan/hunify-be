@@ -1,5 +1,5 @@
-import { Context } from "elysia";
 import { OverviewService } from "./overview.service";
+import { AuthContext } from "../types/context";
 import {
   validateGetDashboardSummaryQuery,
   validateGetRecentActivityQuery,
@@ -25,15 +25,6 @@ import {
   GetOutstandingPaymentReportQuery,
   GetPropertyPerformanceQuery,
 } from "./overview.types";
-
-interface AuthContext extends Context {
-  user?: {
-    userId: string;
-    username: string;
-    email: string;
-    role: string;
-  };
-}
 
 export class OverviewController {
   private overviewService: OverviewService;

@@ -1,5 +1,5 @@
-import { Context } from "elysia";
 import { PropertiesService } from "./properties.service";
+import { AuthContext } from "../types/context";
 import {
   validateAddPropertyInput,
   validateEditPropertyInput,
@@ -17,7 +17,7 @@ export class PropertiesController {
   /**
    * Menambahkan property baru
    */
-  async addProperty(context: Context): Promise<ApiResponse> {
+  async addProperty(context: AuthContext): Promise<ApiResponse> {
     try {
       const body = context.body as AddPropertyRequest;
       const userId = context.user?.userId; // dari JWT middleware
@@ -104,7 +104,7 @@ export class PropertiesController {
   /**
    * Mengedit property yang sudah ada
    */
-  async editProperty(context: Context): Promise<ApiResponse> {
+  async editProperty(context: AuthContext): Promise<ApiResponse> {
     try {
       const body = context.body as EditPropertyRequest;
       const userId = context.user?.userId;
@@ -208,7 +208,7 @@ export class PropertiesController {
   /**
    * Menghapus property (soft delete)
    */
-  async deleteProperty(context: Context): Promise<ApiResponse> {
+  async deleteProperty(context: AuthContext): Promise<ApiResponse> {
     try {
       const userId = context.user?.userId;
       const propertyId = context.params.id;
@@ -278,7 +278,7 @@ export class PropertiesController {
   /**
    * Mendapatkan detail property
    */
-  async getProperty(context: Context): Promise<ApiResponse> {
+  async getProperty(context: AuthContext): Promise<ApiResponse> {
     try {
       const userId = context.user?.userId;
       const propertyId = context.params.id;
@@ -353,7 +353,7 @@ export class PropertiesController {
   /**
    * Mendapatkan semua properties milik user
    */
-  async getProperties(context: Context): Promise<ApiResponse> {
+  async getProperties(context: AuthContext): Promise<ApiResponse> {
     try {
       const userId = context.user?.userId;
 

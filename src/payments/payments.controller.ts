@@ -1,5 +1,5 @@
-import { Context } from "elysia";
 import { PaymentsService } from "./payments.service";
+import { AuthContext } from "../types/context";
 import {
   validateCreateInvoiceInput,
   validateEditInvoiceInput,
@@ -17,15 +17,6 @@ import {
   GetTransactionHistoryQuery,
   GetOverdueInvoicesQuery,
 } from "./payments.types";
-
-interface AuthContext extends Context {
-  user?: {
-    userId: string;
-    username: string;
-    email: string;
-    role: string;
-  };
-}
 
 export class PaymentsController {
   private paymentsService: PaymentsService;

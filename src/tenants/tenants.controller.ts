@@ -1,5 +1,5 @@
-import { Context } from "elysia";
 import { TenantsService } from "./tenants.service";
+import { AuthContext } from "../types/context";
 import {
   validateCreateTenantInput,
   validateCreateTenancyInput,
@@ -21,15 +21,6 @@ import {
 } from "./tenants.types";
 
 const tenantsService = new TenantsService();
-
-interface AuthContext extends Context {
-  user?: {
-    userId: string;
-    username: string;
-    email: string;
-    role: string;
-  };
-}
 
 export class TenantsController {
   /**
@@ -287,6 +278,7 @@ export class TenantsController {
       const userId = context.user?.userId;
       const { id } = context.params as { id: string };
       console.log("id", id);
+      console.log("body", body);
 
       if (!userId) {
         context.set.status = 401;
@@ -356,6 +348,7 @@ export class TenantsController {
   async editTenancy(context: AuthContext): Promise<ApiResponse> {
     try {
       const body = context.body as EditTenancyRequest;
+      console.log("Edit tenancy body:", body);
       const userId = context.user?.userId;
       const { id } = context.params as { id: string };
 

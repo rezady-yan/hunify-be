@@ -270,6 +270,7 @@ export const tenantsSwaggerSchemas = {
       emergencyContactPhone: t.Optional(t.String()),
       notes: t.Optional(t.String({ maxLength: 1000 })),
       fullName: t.Optional(t.String({ maxLength: 50 })),
+      identityNumber: t.Optional(t.String({ maxLength: 20 })),
     }),
     response: {
       200: t.Object({
@@ -282,6 +283,7 @@ export const tenantsSwaggerSchemas = {
             phoneNumber: t.String(),
             email: t.Nullable(t.String()),
             address: t.Nullable(t.String()),
+            identityNumber: t.Nullable(t.String()),
             updatedAt: t.String(),
           }),
         }),
@@ -293,7 +295,8 @@ export const tenantsSwaggerSchemas = {
     detail: {
       tags: ["Tenants"],
       summary: "Edit tenancy information",
-      description: "Update billing cycle, rent price, or end date. Can also move tenant to different unit (Owner only)",
+      description:
+        "Update billing cycle, rent price, or end date. Can also move tenant to different unit (Owner only)",
       security: [{ bearerAuth: [] }],
     },
     params: t.Object({
@@ -324,7 +327,8 @@ export const tenantsSwaggerSchemas = {
       ),
       startDate: t.Optional(
         t.String({
-          description: "Change start date when moving to different unit (YYYY-MM-DD)",
+          description:
+            "Change start date when moving to different unit (YYYY-MM-DD)",
         }),
       ),
     }),
@@ -457,11 +461,11 @@ export const tenantsSwaggerSchemas = {
                   id: t.String(),
                   fullName: t.String(),
                   phoneNumber: t.String(),
-                  email: t.Optional(t.String()),
-                  identityNumber: t.Optional(t.String()),
-                  address: t.Optional(t.String()),
-                  emergencyContactName: t.Optional(t.String()),
-                  emergencyContactPhone: t.Optional(t.String()),
+                  email: t.Nullable(t.String()),
+                  identityNumber: t.Nullable(t.String()),
+                  address: t.Nullable(t.String()),
+                  emergencyContactName: t.Nullable(t.String()),
+                  emergencyContactPhone: t.Nullable(t.String()),
                   notes: t.Nullable(t.String()),
                   createdBy: t.String(),
                   createdAt: t.String(),
@@ -506,7 +510,8 @@ export const tenantsSwaggerSchemas = {
     detail: {
       tags: ["Tenants"],
       summary: "Get single tenant with tenancies and documents",
-      description: "Retrieve a single tenant with their tenancies and documents",
+      description:
+        "Retrieve a single tenant with their tenancies and documents",
       security: [{ bearerAuth: [] }],
     },
     params: t.Object({
@@ -522,11 +527,11 @@ export const tenantsSwaggerSchemas = {
               id: t.String(),
               fullName: t.String(),
               phoneNumber: t.String(),
-              email: t.Optional(t.String()),
-              identityNumber: t.Optional(t.String()),
-              address: t.Optional(t.String()),
-              emergencyContactName: t.Optional(t.String()),
-              emergencyContactPhone: t.Optional(t.String()),
+              email: t.Nullable(t.String()),
+              identityNumber: t.Nullable(t.String()),
+              address: t.Nullable(t.String()),
+              emergencyContactName: t.Nullable(t.String()),
+              emergencyContactPhone: t.Nullable(t.String()),
               notes: t.Nullable(t.String()),
               createdBy: t.String(),
               createdAt: t.String(),

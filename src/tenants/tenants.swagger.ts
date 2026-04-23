@@ -100,7 +100,7 @@ export const tenantsSwaggerSchemas = {
         description: "Tenancy start date (YYYY-MM-DD)",
         examples: ["2026-02-23"],
       }),
-      endDate: t.Optional(
+      endDate: t.Nullable(
         t.String({
           description: "Tenancy end date (YYYY-MM-DD), optional for permanent",
           examples: ["2027-02-23"],
@@ -478,7 +478,7 @@ export const tenantsSwaggerSchemas = {
                     propertyId: t.String(),
                     unitId: t.String(),
                     startDate: t.String(),
-                    endDate: t.Optional(t.String()),
+                    endDate: t.Nullable(t.String()),
                     billingCycle: t.String(),
                     billingAnchorDay: t.Optional(t.Number()),
                     rentPrice: t.String(),

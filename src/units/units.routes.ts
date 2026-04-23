@@ -17,7 +17,7 @@ export const unitsRoutes = new Elysia()
   )
   .get(
     "/",
-    (context: AuthContext) => unitsController.getUnits(context),
+    (context) => unitsController.getUnits(context),
     unitsSwaggerSchemas.getUnits,
   )
   .get(

@@ -149,7 +149,7 @@ export class UnitsController {
   /**
    * Get list units
    */
-  async getUnits(context: AuthContext): Promise<ApiResponse> {
+  async getUnits(context: AuthContext) {
     try {
       const userId = context.user?.userId;
 

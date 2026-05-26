@@ -81,7 +81,7 @@ const app = new Elysia()
   .group("/tenants", (app) => app.derive(authMiddleware).use(tenantsRoutes))
   .group("/payments", (app) => app.derive(authMiddleware).use(paymentsRoutes))
   .group("/overview", (app) => app.derive(authMiddleware).use(overviewRoutes))
-  .listen(3000);
+  .listen(process.env.PORT || 4001);
 
 console.log(
   `🦊 Hunify API is running at ${app.server?.hostname}:${app.server?.port}`,
